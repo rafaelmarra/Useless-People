@@ -16,8 +16,8 @@ class MainActivityPresenter (private var mainActivityView: MainActivityView?, pr
         if (presentId == 10){
             mainActivityView?.cantGoFurther(context)
         }else{
-            getUserForFragment(presentId+1)
             mainActivityView?.increasePage()
+            getUserForFragment(presentId+1)
         }
     }
 
@@ -26,8 +26,8 @@ class MainActivityPresenter (private var mainActivityView: MainActivityView?, pr
         if (presentId == 1){
             mainActivityView?.cantGoBack(context)
         }else{
-            getUserForFragment(presentId-1)
             mainActivityView?.decreasePage()
+            getUserForFragment(presentId-1)
         }
     }
 

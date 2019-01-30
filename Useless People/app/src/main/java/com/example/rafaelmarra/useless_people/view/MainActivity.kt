@@ -14,6 +14,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     private val mainActivityPresenter = MainActivityPresenter(this, this)
     private var userCounter = 1
     private val fragmentManager = supportFragmentManager
+    private var isGoingForward = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +35,17 @@ class MainActivity : AppCompatActivity(), MainActivityView {
 
         val userFragment = newUserFragmentInstance(user)
 
-        fragmentManager.beginTransaction()
-            .setCustomAnimations(R.anim.slide_left_enter, R.anim.slide_left_exit)
-            .replace(container.id, userFragment)
-            .commit()
-
+        if (isGoingForward) {
+            fragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.slide_left_enter, R.anim.slide_left_exit)
+                .replace(container.id, userFragment)
+                .commit()
+        } else {
+            fragmentManager.beginTransaction()
+                .setCustomAnimations(R.anim.slide_right_enter, R.anim.slide_right_exit)
+                .replace(container.id, userFragment)
+                .commit()
+        }
     }
 
     override fun cantGoFurther(context: Context) {
@@ -50,11 +57,13 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     }
 
     override fun increasePage() {
+        isGoingForward = true
         userCounter++
         txtUserCounter.text = userCounter.toString()
     }
 
     override fun decreasePage() {
+        isGoingForward = false
         userCounter--
         txtUserCounter.text = userCounter.toString()
 
