@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.MainActivity">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="16dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp" android:layout_marginRight="16dp"
+            android:id="@+id/linearLayout">
+        <Button
+                android:layout_marginRight="8dp"
+                android:text="-"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonPrevious"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_marginEnd="8dp" android:textStyle="bold" android:textSize="24sp"/>
+        <TextView
+                android:text="1"
+                android:layout_width="22dp"
+                android:layout_height="wrap_content" android:id="@+id/txtUserCounter" android:layout_weight="1"
+                android:layout_gravity="center" android:textSize="18sp" android:gravity="center"
+                android:textStyle="bold"/>
+        <Button
+                android:text="+"
+                android:layout_marginLeft="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/buttonNext"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_marginStart="8dp" android:textStyle="bold"
+                android:textSize="24sp"/>
+    </LinearLayout>
+    <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/container"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout">
+
+        <ProgressBar
+                style="?android:attr/progressBarStyle"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar"/>
+    </FrameLayout>
+</android.support.constraint.ConstraintLayout>
