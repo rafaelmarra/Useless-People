@@ -5,29 +5,32 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import com.example.rafaelmarra.useless_people.R
+import com.example.rafaelmarra.useless_people.model.dao.UserDAO
 import com.example.rafaelmarra.useless_people.model.user.User
 import com.example.rafaelmarra.useless_people.presenter.MainActivityPresenter
+import com.example.rafaelmarra.useless_people.presenter.MainActivityPresenterContract
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), MainActivityView {
 
-    private val mainActivityPresenter = MainActivityPresenter(this, this)
     private var userCounter = 1
     private val fragmentManager = supportFragmentManager
     private var isGoingForward = true
+    private val userDAO = UserDAO()
+    private val mainActivityPresenterContract: MainActivityPresenterContract = MainActivityPresenter(this, this, userDAO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mainActivityPresenter.getUserForFragment(userCounter)
+        mainActivityPresenterContract.getUserForFragment(userCounter)
 
         buttonNext.setOnClickListener {
-            mainActivityPresenter.goNext(userCounter)
+            mainActivityPresenterContract.goNext(userCounter)
         }
 
         buttonPrevious.setOnClickListener {
-            mainActivityPresenter.goBack(userCounter)
+            mainActivityPresenterContract.goBack(userCounter)
         }
     }
 
@@ -70,7 +73,7 @@ class MainActivity : AppCompatActivity(), MainActivityView {
     }
 
     override fun onDestroy() {
-        mainActivityPresenter.onDestroy()
+        mainActivityPresenterContract.onDestroy()
         super.onDestroy()
     }
 }

@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import com.example.rafaelmarra.useless_people.R
 import com.example.rafaelmarra.useless_people.model.user.User
 import com.example.rafaelmarra.useless_people.presenter.UserFragmentPresenter
+import com.example.rafaelmarra.useless_people.presenter.UserFragmentPresenterContract
 import kotlinx.android.synthetic.main.fragment_user.view.*
 
 fun newUserFragmentInstance(user: User): UserFragment {
@@ -25,7 +26,7 @@ fun newUserFragmentInstance(user: User): UserFragment {
 
 class UserFragment : Fragment(), UserFragmentView {
 
-    private val userFragmentPresenter = UserFragmentPresenter(this)
+    private val userFragmentPresenterContract: UserFragmentPresenterContract = UserFragmentPresenter(this)
     private lateinit var fragmentView: View
 
     override fun onCreateView(
@@ -37,7 +38,7 @@ class UserFragment : Fragment(), UserFragmentView {
         fragmentView = inflater.inflate(R.layout.fragment_user, container, false)
 
         val user = arguments?.getSerializable("user") as User
-        userFragmentPresenter.fillTexts(user)
+        userFragmentPresenterContract.fillTexts(user)
 
         return fragmentView
     }

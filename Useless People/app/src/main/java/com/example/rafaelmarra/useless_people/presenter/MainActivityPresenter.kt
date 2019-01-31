@@ -7,36 +7,36 @@ import com.example.rafaelmarra.useless_people.model.dao.UserDAO
 import com.example.rafaelmarra.useless_people.model.user.User
 import com.example.rafaelmarra.useless_people.view.MainActivityView
 
-class MainActivityPresenter (private var mainActivityView: MainActivityView?, private val context: Context): ServiceListener{
+class MainActivityPresenter
+    (private var mainActivityView: MainActivityView?, private val context: Context, private val userDAO: UserDAO) :
+    ServiceListener, MainActivityPresenterContract {
 
-    private val userDAO = UserDAO()
+    override fun goNext(presentId: Int) {
 
-    fun goNext(presentId: Int){
-
-        if (presentId == 10){
+        if (presentId == 10) {
             mainActivityView?.cantGoFurther(context)
-        }else{
+        } else {
             mainActivityView?.increasePage()
-            getUserForFragment(presentId+1)
+            getUserForFragment(presentId + 1)
         }
     }
 
-    fun goBack(presentId: Int){
+    override fun goBack(presentId: Int) {
 
-        if (presentId == 1){
+        if (presentId == 1) {
             mainActivityView?.cantGoBack(context)
-        }else{
+        } else {
             mainActivityView?.decreasePage()
-            getUserForFragment(presentId-1)
+            getUserForFragment(presentId - 1)
         }
     }
 
-    fun onDestroy(){
+    override fun onDestroy() {
 
         mainActivityView = null
     }
 
-    fun getUserForFragment(id: Int){
+    override fun getUserForFragment(id: Int) {
 
         userDAO.getUser(context, id, this)
     }
