@@ -1,7 +1,5 @@
 package com.example.rafaelmarra.useless_people
 
-import android.content.Context
-import com.example.rafaelmarra.useless_people.model.dao.ServiceListener
 import com.example.rafaelmarra.useless_people.model.dao.UserDAO
 import com.example.rafaelmarra.useless_people.model.user.Address
 import com.example.rafaelmarra.useless_people.model.user.Company
@@ -11,9 +9,9 @@ import com.example.rafaelmarra.useless_people.presenter.MainActivityPresenter
 import com.example.rafaelmarra.useless_people.view.MainActivityView
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentCaptor
-import org.mockito.Captor
 import org.mockito.Mock
+import org.mockito.Mockito
+import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 
@@ -24,52 +22,88 @@ class MainActivityPresenterTest {
     private lateinit var mainActivityView: MainActivityView
 
     @Mock
-    private lateinit var context: Context
-
-    @Mock
     private lateinit var userDAO: UserDAO
 
-    @Captor
-    private lateinit var userCallbackCaptor: ArgumentCaptor<ServiceListener>
+    @Mock
+    private lateinit var throwable: Throwable
 
     private lateinit var mainActivityPresenter: MainActivityPresenter
 
-    val USER = User(
+    private val user = User(
         Address("", Geo("", ""), "", "", ""),
         Company("", "", ""),
-        "", 0, "", "", "", "")
+        "", 0, "", "", "", ""
+    )
 
     @Before
-    fun setupMainActivityPresenter(){
+    fun setupMainActivityPresenter() {
         MockitoAnnotations.initMocks(this)
 
-        mainActivityPresenter = MainActivityPresenter(mainActivityView, context, userDAO)
+        mainActivityPresenter = Mockito.spy(MainActivityPresenter(mainActivityView, userDAO))
     }
 
     @Test
-    fun tryToGoToNextWhenLastPage(){
+    fun tryToGoToNextWhenLastPage() {
         mainActivityPresenter.goNext(10)
 
-        verify(mainActivityView).cantGoFurther(context)
+        verify(mainActivityView, times(1)).cantGoFurther()
     }
 
     @Test
-    fun tryToGoToNextWhenNotLastPage(){
+    fun tryToGoToNextWhenNotLastPage() {
         mainActivityPresenter.goNext(9)
 
-        verify(mainActivityView).increasePage()
+        verify(mainActivityView, times(1)).increasePage()
+        verify(mainActivityPresenter, times(1)).getUserForFragment(10)
     }
 
     @Test
-    fun getUserFromApiAndPlaceIntoFragment(){
-        mainActivityPresenter.getUserForFragment(1)
+    fun tryToGoBackWhenFirstPage() {
+        mainActivityPresenter.goBack(1)
 
-        verify(userDAO).getUser(context, 1, userCallbackCaptor.capture())
-        userCallbackCaptor.value.onSucess(USER)
-
-        verify(mainActivityView).placeUserFragment(USER)
+        verify(mainActivityView, times(1)).cantGoBack()
     }
 
+    @Test
+    fun tryToGoBackWhenNotFirstPage() {
+        mainActivityPresenter.goBack(2)
 
+        verify(mainActivityView, times(1)).decreasePage()
+        verify(mainActivityPresenter, times(1)).getUserForFragment(1)
+    }
 
+    @Test
+    fun getUserFromApiAndPlaceIntoFragment() {
+
+        Mockito.`when`(userDAO.getUser(1, mainActivityPresenter)).then { mainActivityPresenter.onSucess(user) }
+        Mockito.`when`(mainActivityView.isConnected()).thenReturn(true)
+
+        mainActivityPresenter.getUserForFragment(1)
+
+        verify(userDAO, times(1)).getUser(1, mainActivityPresenter)
+        verify(mainActivityView, times(1)).placeUserFragment(user)
+    }
+
+    @Test
+    fun callApiWithoutConnection(){
+
+        Mockito.`when`(userDAO.getUser(1, mainActivityPresenter)).then { mainActivityPresenter.onSucess(user) }
+        Mockito.`when`(mainActivityView.isConnected()).thenReturn(false)
+
+        mainActivityPresenter.getUserForFragment(1)
+
+        verify(mainActivityView, times(1)).errorOnNetwork()
+    }
+
+    @Test
+    fun callApiWithErrorResponse(){
+
+        Mockito.`when`(userDAO.getUser(1, mainActivityPresenter)).then { mainActivityPresenter.onError(throwable) }
+        Mockito.`when`(mainActivityView.isConnected()).thenReturn(true)
+
+        mainActivityPresenter.getUserForFragment(1)
+
+        verify(userDAO, times(1)).getUser(1, mainActivityPresenter)
+        verify(mainActivityView, times(1)).errorOnRequest()
+    }
 }

@@ -1,22 +1,22 @@
 package com.example.rafaelmarra.useless_people.presenter
 
-import android.content.Context
-import android.util.Log
 import com.example.rafaelmarra.useless_people.model.dao.ServiceListener
 import com.example.rafaelmarra.useless_people.model.dao.UserDAO
 import com.example.rafaelmarra.useless_people.model.user.User
+import com.example.rafaelmarra.useless_people.util.EspressoIdlingResource
 import com.example.rafaelmarra.useless_people.view.MainActivityView
 
 class MainActivityPresenter
-    (private var mainActivityView: MainActivityView?, private val context: Context, private val userDAO: UserDAO) :
+    (private var mainActivityView: MainActivityView?, private val userDAO: UserDAO) :
     ServiceListener, MainActivityPresenterContract {
 
     override fun goNext(presentId: Int) {
 
         if (presentId == 10) {
-            mainActivityView?.cantGoFurther(context)
+            mainActivityView?.cantGoFurther()
         } else {
             mainActivityView?.increasePage()
+
             getUserForFragment(presentId + 1)
         }
     }
@@ -24,7 +24,7 @@ class MainActivityPresenter
     override fun goBack(presentId: Int) {
 
         if (presentId == 1) {
-            mainActivityView?.cantGoBack(context)
+            mainActivityView?.cantGoBack()
         } else {
             mainActivityView?.decreasePage()
             getUserForFragment(presentId - 1)
@@ -38,7 +38,14 @@ class MainActivityPresenter
 
     override fun getUserForFragment(id: Int) {
 
-        userDAO.getUser(context, id, this)
+        if (mainActivityView?.isConnected() == true) {
+
+            userDAO.getUser(id, this)
+
+        } else {
+
+            mainActivityView?.errorOnNetwork()
+        }
     }
 
     override fun onSucess(obtained: Any) {
@@ -50,6 +57,8 @@ class MainActivityPresenter
 
     override fun onError(throwable: Throwable) {
 
-        Log.d("CALL", "ERROR")
+        /*Log.d("CALL", "ERROR")*/
+
+        mainActivityView?.errorOnRequest()
     }
 }
