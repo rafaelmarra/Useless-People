@@ -15,6 +15,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), MainActivityView {
 
+    private val context: Context = MainActivity()
+
     private var userCounter = 1
     private val fragmentManager = supportFragmentManager
     private var isGoingForward = true
